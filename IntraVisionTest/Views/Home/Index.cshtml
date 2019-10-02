@@ -1,31 +1,139 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@using IntraVisionTest.Models
+@model Purchase
+
+@{
+    ViewBag.Title = "Напитки";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<div class="col-md-12" style="padding-bottom:120px;">
+    <table class="table">
+        <tr>
+            <th class="col-md-2"></th>
+            <th class="col-md-3">
+                @Html.DisplayName("Название")
+            </th>
+            <th class="col-md-1">
+                @Html.DisplayName("Цена")
+            </th>
+            <th class="col-md-2"></th>
+            <th class="col-md-3"></th>
+        </tr>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+        @foreach (var item in ViewBag.Drinks as List<Drink>)
+        {
+        <tr>
+            <td style="text-align   :center">
+                @if (item.ImageData != null)
+                {
+                    <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="100" />
+                }
+            </td>
+            <td>
+                <h3>@item.Name</h3>
+
+            </td>
+            <td>
+                <h3>@item.Price.ToString("c")</h3>
+            </td>
+            <td style="text-align:center">
+                @if (item.Count == 0 || item.Count == (Model.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count))
+                {
+                    <h3>Нет в наличии</h3>
+                }
+            </td>
+            <td>
+                @if (item.Count > 0 && (Model.CurrentSum - Model.PurchaseSum) >= item.Price && item.Count > (Model.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count))
+                {
+
+                    <a href="@Url.Action("AddDrink",new { drink=item.Name })"><img src="~/Content/addAble.png" alt="+" /></a>
+                }
+                else
+                {
+                    <img src="~//Content/addDisable.png" />
+                }
+                <h1 style="display:inline">@Model.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count</h1>
+                @if (Model.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count > 0)
+                {
+                    <a href="@Url.Action("RemoveDrink",new { drink=item.Name })"><img src="~/Content/removeAble.png" alt="-" /></a>
+                }
+                else
+                {
+                    <img src="~/Content/removeDisable.png" />
+                }
+            </td>
+
+        </tr>
+        }
+
+    </table>
 </div>
+@section cashbox{
+    <div>
+        <div class="col-md-6 col-md-offset-3">
+            <h3 style="text-align:center">@ViewBag.Complete</h3>
+        </div>
+
+        <div class="col-md-6 col-md-offset-3">
+            @if (Model.ChangeAble && Model.PurchaseSum > 0)
+            {
+                <h3 style="text-align:center">@Html.ActionLink("Завершить покупку", "CompletePurchase")</h3>
+            }
+            else if (Model.CurrentSum == 0)
+            {
+                <h3 style="text-align:center">Внесите деньги</h3>
+            }
+            else if (!Model.ChangeAble && Model.PurchaseSum > 0)
+            {
+                <h3 style="text-align:center">В аппарате нет монеет для сдачи. Обратитесь к менеджеру или измените заказ.</h3>
+            }
+        </div>
+    </div>
+}
+
+
+
+@section money{
+    <div>
+        <ul style="list-style-type:none">
+            @foreach (var item in ViewBag.Coins as List<Coin>)
+            {
+                <li style="padding:5px">
+                    @if (item.Able)
+                    {
+                        if (item.ImageData != null)
+                        {
+                            <a href="@Url.Action("InsertCoin", new { value = item.Cost })"><img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="80" /></a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("InsertCoin", new { value = item.Cost })">@item.Cost</a>
+                        }
+                    }
+                    else
+                    {
+                        if (item.ImageData != null)
+                        {
+                            <div style="position:relative">
+                                <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="80" />
+                                <img style="position:absolute;top:0px;left:0px;" src="~/Content/cross.png" height="80" />
+                            </div>
+                        }
+                        else
+                        {
+                            <img src="~/Content/removeDisable.png" height="80" />
+                        }
+                    }
+                </li>
+            }
+        </ul>
+        <div>
+            <h3 style="text-align:center">Текущая сумма</h3>
+            <h1 style="text-align:center">@Model.CurrentSum.ToString("c")</h1>
+            <h3 style="text-align:center">Сумма покупки</h3>
+            <h1 style="text-align:center">@Model.PurchaseSum.ToString("c")</h1>
+        </div>
+    </div>
+}
+@section turn{
+    <a href="@Url.Action("Index", "Admin")"><img src="~/Content/turn.png" alt="-" style="height:50px; width:50px" /></a>
+}

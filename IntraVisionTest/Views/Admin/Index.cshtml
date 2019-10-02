@@ -1,0 +1,150 @@
+﻿@using IntraVisionTest.Models
+<div style="padding-bottom:120px;">
+    <table class="table">
+        <tr>
+            <th class="col-md-1">
+                @Html.DisplayName("Картинка")
+            </th>
+            <th class="col-md-2">
+                @Html.DisplayName("Сменить картинку")
+            </th>
+            <th class="col-md-1">
+                @Html.DisplayName("Название")
+            </th>
+            <th class="col-md-1">
+                @Html.DisplayName("Цена")
+            </th>
+            <th class="col-md-1">
+                @Html.DisplayName("Количество")
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in ViewBag.Drinks as List<Drink>)
+        {
+            <tr>
+                <td>
+                    @if (item.ImageData != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="50" />
+                    }
+                    else
+                    {
+                        @: Нет картинки
+                    }
+                </td>
+                @using (Html.BeginForm("SaveDrink", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.Hidden("Id", item.Id)
+
+                    <td>
+                        <input type="file" name="image" accept=".bmp,.png" />
+                    </td>
+                    <td>
+                        <input type="text" name="Name" value="@item.Name" required/>
+                    </td>
+                    <td>
+                        <input type="number" name="Price" value="@item.Price" required pattern="\d+" min="0" />
+                    </td>
+                    <td>
+                        <input type="number" name="Count" value="@item.Count" required pattern="\d+" min="0" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Сохранить" />
+                    </td>
+                }
+                <td>
+                    <a href="@Url.Action("DeleteDrink", new { Name = item.Name })" onclick="deleteConfirm(event)">Удалить</a>
+                </td>
+
+            </tr>
+        }
+
+    </table>
+    <table class="table" id="newDrink" style="display:none">
+        <tr>
+            <td class="col-md-1">
+                Нет картинки
+            </td>
+            @using (Html.BeginForm("AddDrink", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <td class="col-md-2">
+                    <input type="file" name="image" accept=".bmp,.png" />
+                </td>
+                <td class="col-md-1">
+                    <input type="text" name="Name" required />
+                </td>
+                <td class="col-md-1">
+                    <input type="number" name="Price" required pattern="\d+" min="0" />
+                </td>
+                <td class="col-md-1">
+                    <input type="number" name="Count" required pattern="\d+" min="0" />
+                </td>
+                <td class="col-md-1">
+                    <input type="submit" value="Сохранить" />
+                </td>
+            }
+            <td></td>
+        </tr>
+    </table>
+    <input value="Добавить" type="button" onclick="enableFields()" class="col-md-1" />
+</div>
+
+@section money{
+    <table>
+        @foreach (var item in ViewBag.Coins as List<Coin>)
+        {
+            <tr>
+                <td style="padding-top:5px">
+                    @if (item.ImageData != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="50" />
+                    }
+                    else
+                    {
+                        <p>нет изображения</p>
+                    }
+                </td>
+                @using (Html.BeginForm("SaveCoin", "Admin", FormMethod.Post))
+                {
+                    @Html.Hidden("Id", item.Id)
+                    <td>
+                        <input id="ch+@item.Id" name="Able" type="checkbox" checked="@item.Able" style="width:20px; height:20px;margin-left:5px;margin-right:5px" />
+                    </td>
+                    <td style="padding-right:5px">
+                        <input type="number" name="Count" value="@item.Count" required pattern="\d+" min="0" />
+                    </td>
+                    <td>
+                        <input type="submit" value="сохранить" onclick="changeFlag('ch+@item.Id')" />
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+}
+@section turn{
+    <a href="@Url.Action("Index", "Home")"><img src="~/Content/turn.png" alt="-" style="height:50px; width:50px"/></a>
+}
+    <script>
+    window.onload = function () {
+        if ( @Html.Raw(Json.Encode(ViewBag.ErrorMessage)) != null) {
+            var mes ='@Html.Raw(Json.Encode(ViewBag.ErrorMessage))'
+                alert(mes)
+        }
+    }
+    function changeFlag(s) {
+        var target = document.getElementById(s)
+        target.value = target.checked
+    }
+    function enableFields() {
+        var target = document.getElementById("newDrink")
+        target.style.display = 'block'
+    }
+    function deleteConfirm(e) {
+        var conf = confirm("Удалить?")
+        if (!conf) {
+            e.preventDefault();
+        }
+    }
+    </script>

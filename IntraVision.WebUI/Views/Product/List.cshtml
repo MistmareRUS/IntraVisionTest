@@ -1,0 +1,11 @@
+﻿@model IEnumerable<IntraVision.Domain.Entities.Product>
+@{
+    ViewBag.Title = "Напитки";
+}
+
+<h2>Напитки</h2>
+
+@foreach (var p in Model)
+{
+    Html.RenderPartial("ProductSummary", p);
+}

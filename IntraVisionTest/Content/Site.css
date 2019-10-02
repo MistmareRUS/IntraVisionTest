@@ -22,3 +22,17 @@ select,
 textarea {
     max-width: 280px;
 }
+div#Coins{
+    float:right
+}
+
+div#completeText{
+    float:left
+}
+
+div#outText{
+    float:left
+}
+div#sum{
+    float:left
+}
