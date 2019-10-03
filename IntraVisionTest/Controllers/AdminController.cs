@@ -1,10 +1,7 @@
 ﻿using IntraVisionTest.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Drawing;
 
 namespace IntraVisionTest.Controllers
 {
@@ -87,8 +84,7 @@ namespace IntraVisionTest.Controllers
                     ViewBag.Title = "Адинистрирование";
                     return View("Index");
                 }
-            }
-           
+            }           
             return RedirectToAction("Index");
         }
         protected override void Dispose(bool disposing)

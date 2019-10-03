@@ -1,5 +1,35 @@
 ﻿@using IntraVisionTest.Models
-<div style="padding-bottom:120px;">
+<div>
+    <table>
+        @foreach (var item in ViewBag.Coins as List<Coin>)
+        {
+            <tr>
+                <td style="padding-top:5px">
+                    @if (item.ImageData != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="50" />
+                    }
+                    else
+                    {
+                        <p>нет изображения</p>
+                    }
+                </td>
+                @using (Html.BeginForm("SaveCoin", "Admin", FormMethod.Post))
+                {
+                    @Html.Hidden("Id", item.Id)
+                    <td>
+                        <input id="ch+@item.Id" name="Able" type="checkbox" checked="@item.Able" style="width:20px; height:20px;margin-left:5px;margin-right:5px" />
+                    </td>
+                    <td style="padding-right:5px">
+                        <input type="number" name="Count" value="@item.Count" required pattern="\d+" min="0" />
+                    </td>
+                    <td>
+                        <input type="submit" value="сохранить" onclick="changeFlag('ch+@item.Id')" />
+                    </td>
+                }
+            </tr>
+        }
+    </table>
     <table class="table">
         <tr>
             <th class="col-md-1">
@@ -17,8 +47,8 @@
             <th class="col-md-1">
                 @Html.DisplayName("Количество")
             </th>
-            <th></th>
-            <th></th>
+            <th class="col-md-1"></thclass="col-md-1">
+            <th class="col-md-1"></th>
         </tr>
 
         @foreach (var item in ViewBag.Drinks as List<Drink>)
@@ -42,7 +72,7 @@
                         <input type="file" name="image" accept=".bmp,.png" />
                     </td>
                     <td>
-                        <input type="text" name="Name" value="@item.Name" required/>
+                        <input type="text" name="Name" value="@item.Name" required />
                     </td>
                     <td>
                         <input type="number" name="Price" value="@item.Price" required pattern="\d+" min="0" />
@@ -91,38 +121,6 @@
     <input value="Добавить" type="button" onclick="enableFields()" class="col-md-1" />
 </div>
 
-@section money{
-    <table>
-        @foreach (var item in ViewBag.Coins as List<Coin>)
-        {
-            <tr>
-                <td style="padding-top:5px">
-                    @if (item.ImageData != null)
-                    {
-                        <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="50" />
-                    }
-                    else
-                    {
-                        <p>нет изображения</p>
-                    }
-                </td>
-                @using (Html.BeginForm("SaveCoin", "Admin", FormMethod.Post))
-                {
-                    @Html.Hidden("Id", item.Id)
-                    <td>
-                        <input id="ch+@item.Id" name="Able" type="checkbox" checked="@item.Able" style="width:20px; height:20px;margin-left:5px;margin-right:5px" />
-                    </td>
-                    <td style="padding-right:5px">
-                        <input type="number" name="Count" value="@item.Count" required pattern="\d+" min="0" />
-                    </td>
-                    <td>
-                        <input type="submit" value="сохранить" onclick="changeFlag('ch+@item.Id')" />
-                    </td>
-                }
-            </tr>
-        }
-    </table>
-}
 @section turn{
     <a href="@Url.Action("Index", "Home")"><img src="~/Content/turn.png" alt="-" style="height:50px; width:50px"/></a>
 }

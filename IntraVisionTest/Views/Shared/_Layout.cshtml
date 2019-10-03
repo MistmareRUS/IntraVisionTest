@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html style="min-width:960px">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta charset="utf-8" />
@@ -8,7 +8,7 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body style="background-color:antiquewhite">
+<body style="background-color:antiquewhite; ">
     <div class="navbar navbar-inverse navbar-fixed-top" style="background-color:coral">
         <div class="container">
             <div class="navbar-header">
@@ -16,19 +16,19 @@
             </div>
         </div>
     </div>
-    <div class="container body-content" style="padding-top:50px">
+    <div class="col-md-10 col-md-offset-1" style="top:80px;padding-bottom:120px">
         @RenderBody()
     </div>
-    <div style="position:fixed;bottom:0px; height:120px; background-color:coral;border:solid; border-color:black; border-width:1px" class=" col-md-12">
-        @RenderSection("cashbox", false)
-    </div>
-    <div style="position:fixed;top:82px;right:20px">
+    <div style="position:fixed;top:82px;right:0px; max-width:8%; min-width:92px" >
         @RenderSection("money", false)
     </div>
-    <div style="position:fixed;top:82px;left:20px">
-        @RenderSection("turn", false)
+    <div style=" position:fixed; bottom:0px; height:120px; background-color:coral;border:solid; border-color:black; border-width:1px;width:100%">
+        @RenderSection("cashbox", false)
     </div>
 
+    <div style="position:fixed;top:82px;left:5px">
+        @RenderSection("turn", false)
+    </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

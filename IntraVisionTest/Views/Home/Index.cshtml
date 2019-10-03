@@ -5,24 +5,24 @@
     ViewBag.Title = "Напитки";
 }
 
-<div class="col-md-12" style="padding-bottom:120px;">
+<div class="col-md-12">
     <table class="table">
         <tr>
             <th class="col-md-2"></th>
-            <th class="col-md-3">
+            <th class="col-md-3" style=" min-width:130px">
                 @Html.DisplayName("Название")
             </th>
             <th class="col-md-1">
                 @Html.DisplayName("Цена")
             </th>
             <th class="col-md-2"></th>
-            <th class="col-md-3"></th>
+            <th class="col-md-3" style=" min-width:250px"></th>
         </tr>
 
         @foreach (var item in ViewBag.Drinks as List<Drink>)
         {
         <tr>
-            <td style="text-align   :center">
+            <td style="text-align:center">
                 @if (item.ImageData != null)
                 {
                     <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="100" />
@@ -65,15 +65,15 @@
         </tr>
         }
 
-    </table>
+    </table>    
 </div>
 @section cashbox{
     <div>
-        <div class="col-md-6 col-md-offset-3">
-            <h3 style="text-align:center">@ViewBag.Complete</h3>
+        <div class="col-md-10 col-md-offset-1">
+            <h4 style="text-align:center">@ViewBag.Complete</h4>
         </div>
 
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-10 col-md-offset-1">
             @if (Model.ChangeAble && Model.PurchaseSum > 0)
             {
                 <h3 style="text-align:center">@Html.ActionLink("Завершить покупку", "CompletePurchase")</h3>
@@ -90,46 +90,46 @@
     </div>
 }
 
-
-
 @section money{
-    <div>
-        <ul style="list-style-type:none">
+    <div>        
+        <table>
             @foreach (var item in ViewBag.Coins as List<Coin>)
             {
-                <li style="padding:5px">
-                    @if (item.Able)
-                    {
-                        if (item.ImageData != null)
+                <tr>
+                    <td > 
+                        @if (item.Able)
                         {
-                            <a href="@Url.Action("InsertCoin", new { value = item.Cost })"><img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="80" /></a>
+                            if (item.ImageData != null)
+                            {
+                                <a href="@Url.Action("InsertCoin", new { value = item.Cost })"><img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="80" style="margin-top:5px;"/></a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("InsertCoin", new { value = item.Cost })">@item.Cost</a>
+                            }
                         }
                         else
                         {
-                            <a href="@Url.Action("InsertCoin", new { value = item.Cost })">@item.Cost</a>
+                            if (item.ImageData != null)
+                            {
+                                <div style="position:relative">
+                                    <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="80" style="margin-top:5px;" />
+                                    <img style="position:absolute;top:0px;left:0px;margin-top:5px;" src="~/Content/cross.png" height="80" />
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/Content/removeDisable.png" height="80" />
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (item.ImageData != null)
-                        {
-                            <div style="position:relative">
-                                <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="80" />
-                                <img style="position:absolute;top:0px;left:0px;" src="~/Content/cross.png" height="80" />
-                            </div>
-                        }
-                        else
-                        {
-                            <img src="~/Content/removeDisable.png" height="80" />
-                        }
-                    }
-                </li>
+                    </td>
+                </tr>
             }
-        </ul>
+        </table>
         <div>
-            <h3 style="text-align:center">Текущая сумма</h3>
+            <h4 style="text-align:center">Текущая сумма</h4>
             <h1 style="text-align:center">@Model.CurrentSum.ToString("c")</h1>
-            <h3 style="text-align:center">Сумма покупки</h3>
+            <h4 style="text-align:center">Сумма покупки</h4>
             <h1 style="text-align:center">@Model.PurchaseSum.ToString("c")</h1>
         </div>
     </div>

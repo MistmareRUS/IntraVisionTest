@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Web;
 
 namespace IntraVisionTest.Models
 {
@@ -14,8 +10,8 @@ namespace IntraVisionTest.Models
         public DbSet<Drink> Drinks { get; set; }
         public DbSet<Coin> Coins { get; set; }
     }
-    //public class VendingInitializer : CreateDatabaseIfNotExists<VendingContext>
-    public class VendingInitializer : DropCreateDatabaseAlways<VendingContext>
+    public class VendingInitializer : CreateDatabaseIfNotExists<VendingContext>
+    //public class VendingInitializer : DropCreateDatabaseAlways<VendingContext>//TODO: переключать инициализатор тут.
     {
         protected override void Seed(VendingContext context)
         {
@@ -52,10 +48,10 @@ namespace IntraVisionTest.Models
             Bitmap bmp10R = new Bitmap(im10R);
             byte[] array10R = (byte[])ic.ConvertTo(bmp10R, typeof(byte[]));
 
-            context.Coins.Add(new Coin { Count = 0, Able = true,Cost=1,ImageData=array1R });
-            context.Coins.Add(new Coin { Count = 0, Able = true,Cost=2, ImageData = array2R });
-            context.Coins.Add(new Coin { Count = 0, Able = false,Cost= 5, ImageData = array5R });
-            context.Coins.Add(new Coin { Count = 0, Able = true,Cost= 10, ImageData = array10R });
+            context.Coins.Add(new Coin { Count = 10, Able = true,Cost=1,ImageData=array1R });
+            context.Coins.Add(new Coin { Count = 10, Able = true,Cost=2, ImageData = array2R });
+            context.Coins.Add(new Coin { Count = 10, Able = false,Cost= 5, ImageData = array5R });
+            context.Coins.Add(new Coin { Count = 10, Able = true,Cost= 10, ImageData = array10R });
             base.Seed(context);
         }
     }

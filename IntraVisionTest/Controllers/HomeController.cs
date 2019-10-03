@@ -1,8 +1,5 @@
 ﻿using IntraVisionTest.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace IntraVisionTest.Controllers
@@ -24,7 +21,6 @@ namespace IntraVisionTest.Controllers
             ViewBag.Drinks = db.Drinks.ToList();
             ViewBag.Coins = db.Coins.ToList();
             ViewBag.Title = "Покупка напитков";
-            {
                 purchase = (Purchase)Session["PurchaseSession"];
                 if (purchase == null)
                 {
@@ -41,7 +37,6 @@ namespace IntraVisionTest.Controllers
                     purchase.ChangeAble = Changeable();
                     Session["PurchaseSession"] = purchase;
                 }
-            }
             return View(purchase);
         }
         public ActionResult InsertCoin(int value)
@@ -59,8 +54,7 @@ namespace IntraVisionTest.Controllers
             purchase = (Purchase)Session["PurchaseSession"];
             purchase.Drinks.FirstOrDefault(d => d.Drink == drink).Count++;
 
-            SumCalculate();
-            purchase.ChangeAble = Changeable();
+            
             Session["PurchaseSession"] = purchase;
             return RedirectToAction("Index");
         }
@@ -68,8 +62,7 @@ namespace IntraVisionTest.Controllers
         {
             purchase = (Purchase)Session["PurchaseSession"];
             purchase.Drinks.FirstOrDefault(d => d.Drink == drink).Count--;
-            SumCalculate();
-            purchase.ChangeAble = Changeable();
+            
             Session["PurchaseSession"] = purchase;
             return RedirectToAction("Index");
         }
@@ -85,7 +78,11 @@ namespace IntraVisionTest.Controllers
             {
                 purchase.Drinks.Add(new OrderedDrinks { Drink = item.Name });
             }
-            return RedirectToAction("Index");
+            Session["PurchaseSession"] = purchase;
+            ViewBag.Drinks = db.Drinks.ToList();
+            ViewBag.Coins = db.Coins.ToList();
+            ViewBag.Title = "Покупка напитков";
+            return View("Index",purchase);
         }
         private bool Changeable()
         {
@@ -132,14 +129,13 @@ namespace IntraVisionTest.Controllers
                 else
                 {
                     needToChangeSum -= (item.Cost * item.Count);
-                    outText += $"\n{item.Count} монет(а) по {item.Cost}";
+                    outText += $"\n{item.Count} монет(а) по {item.Cost}.";
                     var coin = db.Coins.FirstOrDefault(c => c.Cost == item.Cost);
                     coin.Count -= item.Count;
                     db.SaveChanges();
                 }
                 if (needToChangeSum == 0)
                 {
-                    outText += ".";
                     return outText;
                 }
             }
