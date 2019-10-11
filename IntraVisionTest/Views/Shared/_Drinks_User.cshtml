@@ -1,0 +1,65 @@
+﻿@using IntraVisionTest.ViewModels
+@using IntraVisionTest.Extentions
+
+@model UserViewModel
+<table class="table">
+    <tr>
+        <th class="col-md-2"></th>
+        <th class="col-md-3" style=" min-width:130px">
+            @Html.DisplayName("Название")
+        </th>
+        <th class="col-md-1">
+            @Html.DisplayName("Цена")
+        </th>
+        <th class="col-md-2"></th>
+        <th class="col-md-3" style=" min-width:250px"></th>
+    </tr>
+
+    @foreach (var item in Model.Drinks ?? new List<IntraVisionTest.Models.Drink>())
+    {
+        <tr>
+            <td style="text-align:center">
+                @if (item.ImageData != null)
+                {
+                    <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="100" />
+                }
+            </td>
+            <td>
+                <h3>@item.Name</h3>
+
+            </td>
+            <td>
+                <h3>@item.Price.ToString("c")</h3>
+            </td>
+            <td style="text-align:center">
+                @if (item.Count == 0 || item.Count == (Model.Purchase.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count))
+                {
+                    <h3>Закончилось</h3>
+                }
+            </td>
+            <td>
+                @if (item.Count > 0 && (Model.Purchase.CurrentSum - Model.Purchase.PurchaseSum) >= item.Price && item.Count > (Model.Purchase.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count))
+                {
+                    @Ajax.ImagePathActionLink("/Content/addAble.png", "BuyButton", "AddDrink", "Home", new { drink = item.Name },
+                                new AjaxOptions { UpdateTargetId = "drinksDiv", OnComplete = "InfoDivUpdate(); SumsDivUpdate()",HttpMethod="post",OnFailure= "alert(error); location.href = '/Home/Index'" }, new { })
+                }
+                else
+                {
+                    <img src="~//Content/addDisable.png" class="BuyButton" />
+                }
+
+                <h1 style="display:inline">@Model.Purchase.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count</h1>
+
+                @if (Model.Purchase.Drinks.FirstOrDefault(d => d.Drink == item.Name).Count > 0)
+                {
+                    @Ajax.ImagePathActionLink("/Content/removeAble.png", "BuyButton", "RemoveDrink", "Home", new { drink = item.Name },
+                               new AjaxOptions { UpdateTargetId = "drinksDiv", OnComplete = "InfoDivUpdate(); SumsDivUpdate()",HttpMethod="post",OnFailure= "alert(error); location.href = '/Home/Index'" }, new { })
+                }
+                else
+                {
+                    <img src="~/Content/removeDisable.png" class="BuyButton" />
+                }
+            </td>
+        </tr>
+    }
+</table>

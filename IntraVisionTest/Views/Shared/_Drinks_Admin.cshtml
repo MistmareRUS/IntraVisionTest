@@ -1,0 +1,92 @@
+﻿@model List<IntraVisionTest.Models.Drink>
+
+<form action="/Admin/SaveDrinks" data-ajax="true" method="post" enctype = "multipart/form-data" data-ajax-update="#drinksDiv" 
+      data-ajax-complete="" data-ajax-failure="alert(error); location.href = '/Admin/Index'">
+    <table class="table">
+        <tr>
+            <th class="col-md-1">
+                @Html.DisplayName("Картинка")
+            </th>
+            <th class="col-md-2">
+                @Html.DisplayName("Сменить картинку")
+            </th>
+            <th class="col-md-1">
+                @Html.DisplayName("Название")
+            </th>
+            <th class="col-md-1">
+                @Html.DisplayName("Цена")
+            </th>
+            <th class="col-md-1">
+                @Html.DisplayName("Количество")
+            </th>
+            <th class="col-md-1"></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                @Html.Hidden("[" + (item.Id - 1) + "].drink.Id", item.Id)
+                <td>
+                    @if (item.ImageData != null)
+                    {
+                        <img   src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" height="50"/>
+                    }
+                    else
+                    {
+                        @: Нет картинки
+                    }
+                </td>                
+
+                    <td>
+                        <input type="file" name="[@(item.Id - 1)].ImageFile"  accept=".bmp,.png" />
+                    </td>
+                    <td>
+                        <input type="text" name="[@(item.Id - 1)].drink.Name" value="@item.Name" required />
+                    </td>
+                    <td>
+                        <input type="number" name="[@(item.Id - 1)].drink.Price" value="@item.Price" required pattern="\d+" min="0" />
+                    </td>
+                    <td>
+                        <input type="number" name="[@(item.Id - 1)].drink.Count" value="@item.Count" required pattern="\d+" min="0" />
+                    </td>
+                    <td>
+                        <a  data-ajax="true" data-ajax-update="#drinksDiv" href="@Url.Action("DeleteDrink","Admin", new { Name = item.Name, SecretKey="magickey" })" data-ajax-complete=""
+                            data-ajax-failure="alert(error); location.href = '/Admin/Index?SecretKey=magickey'" data-ajax-confirm="Удалить @item.Name из списка?">Удалить</a>
+                    </td>
+
+            </tr>
+        }
+
+    </table>
+
+    <input type="submit" value="Сохранить настройки напитков" /> <input value="Добавить" type="button" onclick="enableFields()" />
+    <br />
+</form>
+
+<form action="/Admin/AddDrink" data-ajax="true" method="post" enctype="multipart/form-data" data-ajax-update="#drinksDiv"
+                  data-ajax-complete="" data-ajax-failure="alert(error); location.href = '/Admin/Index?SecretKey=magickey'">
+    <table class="table" id="newDrink" style="display:none">
+        <tr>
+            <td class="col-md-1">
+                Нет картинки
+            </td>
+            <td class="col-md-2">
+                <input type="file" name="image" accept=".bmp,.png" />
+            </td>
+            <td class="col-md-1">
+                <input type="text" name="Name" required />
+            </td>
+            <td class="col-md-1">
+                <input type="number" name="Price" required pattern="\d+" min="0" />
+            </td>
+            <td class="col-md-1">
+                <input type="number" name="Count" required pattern="\d+" min="0" />
+            </td>
+            <td class="col-md-1">
+                <input type="submit" value="Сохранить" />
+            </td>
+        </tr>
+    </table>
+</form>
+<a name="bottom"></a>
+    

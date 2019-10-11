@@ -48,10 +48,10 @@ namespace IntraVisionTest.Models
             Bitmap bmp10R = new Bitmap(im10R);
             byte[] array10R = (byte[])ic.ConvertTo(bmp10R, typeof(byte[]));
 
-            context.Coins.Add(new Coin { Count = 10, Able = true,Cost=1,ImageData=array1R });
-            context.Coins.Add(new Coin { Count = 10, Able = true,Cost=2, ImageData = array2R });
-            context.Coins.Add(new Coin { Count = 10, Able = false,Cost= 5, ImageData = array5R });
-            context.Coins.Add(new Coin { Count = 10, Able = true,Cost= 10, ImageData = array10R });
+            context.Coins.Add(new Coin { Count = 1, Able = true,Cost=1,ImageData=array1R });
+            context.Coins.Add(new Coin { Count = 1, Able = true,Cost=2, ImageData = array2R });
+            context.Coins.Add(new Coin { Count = 1, Able = false,Cost= 5, ImageData = array5R });
+            context.Coins.Add(new Coin { Count = 1, Able = true,Cost= 10, ImageData = array10R });
             base.Seed(context);
         }
     }

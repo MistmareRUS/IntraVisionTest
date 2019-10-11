@@ -1,0 +1,38 @@
+﻿@using IntraVisionTest.Extentions
+@model IEnumerable<IntraVisionTest.Models.Coin>
+<table >
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td >
+                @if (item.Able)
+                {
+                    if (item.ImageData != null)
+                    {
+                        @Ajax.ImageActionLink(item.ImageData, "UserCoin", "InsertCoin", "Home", new { value = item.Cost },
+                                new AjaxOptions { UpdateTargetId = "drinksDiv", OnComplete = "InfoDivUpdate(); SumsDivUpdate()",HttpMethod="post",OnFailure= "alert(error); location.href = '/Home/Index'" }, new { })
+                    }
+                    else
+                    {                       
+                        @Ajax.ActionLink(item.Cost.ToString("c"), "InsertCoin", "Home", new { value = item.Cost },
+                                new AjaxOptions { UpdateTargetId = "drinksDiv", OnComplete = "InfoDivUpdate(); SumsDivUpdate()", HttpMethod = "post", OnFailure = "alert(error); location.href = '/Home/Index'" });
+                    }
+                }
+                else
+                {
+                    if (item.ImageData != null)
+                    {
+                        <div style="position:relative">
+                            <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" class="UserCoin" />
+                            <img style="position:absolute;top:0px;left:0px;" src="~/Content/cross.png" class="UserCoin" />
+                        </div>
+                    }
+                    else
+                    {
+                        <img src="~/Content/removeDisable.png" class="UserCoin" />
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>

@@ -1,4 +1,7 @@
-﻿using IntraVisionTest.Models;
+﻿using IntraVisionTest.Extentions;
+using IntraVisionTest.Models;
+using IntraVisionTest.ViewModels;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -12,51 +15,81 @@ namespace IntraVisionTest.Controllers
         {
             this.db = new VendingContext();
         }
+        [AdminAuthorize]
         public ActionResult Index()
         {
-            ViewBag.Drinks = db.Drinks.ToList();
-            ViewBag.Coins = db.Coins.ToList();
-            ViewBag.Title = "Адинистрирование";
-            return View();
+            var uvm = new UserViewModel { Coins = db.Coins.ToList(), Drinks = db.Drinks.ToList() };
+            return View(uvm);
         }
         [HttpPost]
-        public ActionResult SaveCoin(Coin coin)
+        public ActionResult SaveCoins(List<Coin> coins)
         {
-            var tempCoin = db.Coins.FirstOrDefault(d => d.Id == coin.Id);
-            tempCoin.Count = coin.Count;
-            tempCoin.Able = coin.Able;
-            db.SaveChanges();
-
-            return RedirectToAction("Index");
-        }
-        [HttpPost]
-        public ActionResult SaveDrink(Drink drink, HttpPostedFileBase image)
-        {
-            var tempDrink = db.Drinks.FirstOrDefault(d => d.Id == drink.Id);
-            tempDrink.Count = drink.Count;
-            tempDrink.Name = drink.Name;
-            tempDrink.Price = drink.Price;
-            if (image != null && (image.ContentType == "image/png" || image.ContentType == "image/bmp"))
+            if (coins != null)
             {
-                tempDrink.ImageData = new byte[image.ContentLength];
-                image.InputStream.Read(tempDrink.ImageData, 0, image.ContentLength);
+                foreach (var item in coins)
+                {
+                    var tempCoin = db.Coins.Find(item.Id);
+                    if (tempCoin != null)
+                    {
+                        tempCoin.Able = item.Able;
+                        tempCoin.Count = item.Count;
+                    }
+                    db.SaveChanges();
+                }
+                return PartialView("_Money_Admin",db.Coins.ToList());
             }
-            db.SaveChanges();
-
-            return RedirectToAction("Index");
+            else
+            {
+                return new HttpStatusCodeResult(400, "Error!");
+            }
         }
+        [HttpPost]
+        public ActionResult SaveDrinks(List<DrinkWithImageFileViewModel> drinks)
+        {
+            if (drinks != null)
+            {
+                foreach (var item in drinks)
+                {
+                    var tempDrink = db.Drinks.Find(item.drink.Id);
+                    tempDrink.Count = item.drink.Count;
+                    tempDrink.Name = item.drink.Name;
+                    tempDrink.Price = item.drink.Price;
+                    if (item.ImageFile != null && (item.ImageFile.ContentType == "image/png" || item.ImageFile.ContentType == "image/bmp"))
+                    {
+                        tempDrink.ImageData = new byte[item.ImageFile.ContentLength];
+                        item.ImageFile.InputStream.Read(tempDrink.ImageData, 0, item.ImageFile.ContentLength);
+                    }
+                }
+                db.SaveChanges();
+
+                return PartialView("_Drinks_Admin", db.Drinks.ToList());
+            }
+            else
+            {
+                return new HttpStatusCodeResult(400, "Error!");
+            }
+        }
+        [AdminAuthorize]
         public ActionResult DeleteDrink(string Name)
-        {
+        {            
             var drink = db.Drinks.FirstOrDefault(d => d.Name == Name);
-            db.Drinks.Remove(drink);
-            db.SaveChanges();
-            var purchase = (Purchase)Session["PurchaseSession"];
-            if (purchase != null)
+            if (drink != null)
             {
-                purchase.Drinks.Remove(purchase.Drinks.FirstOrDefault(d => d.Drink == Name));
+                db.Drinks.Remove(drink);
+                db.SaveChanges();
+                var purchase = (Purchase)Session["PurchaseSession"];
+                if (purchase != null)
+                {
+                    purchase.Drinks.Remove(purchase.Drinks.FirstOrDefault(d => d.Drink == Name));
+                }
+                return PartialView("_Drinks_Admin", db.Drinks.ToList());
             }
-            return RedirectToAction("Index");
+            else
+            {
+                return new HttpStatusCodeResult(400, "Error!");
+            }
         }
+        [HttpPost]
         public ActionResult AddDrink(Drink drink, HttpPostedFileBase image)
         {
             if (ModelState.IsValid)
@@ -78,14 +111,10 @@ namespace IntraVisionTest.Controllers
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = "Такой напиток уже есть в списке!";
-                    ViewBag.Drinks = db.Drinks.ToList();
-                    ViewBag.Coins = db.Coins.ToList();
-                    ViewBag.Title = "Адинистрирование";
-                    return View("Index");
+                    return new HttpStatusCodeResult(400, "Error! There is the drink with the same title.");
                 }
-            }           
-            return RedirectToAction("Index");
+            }
+            return PartialView("_Drinks_Admin", db.Drinks.ToList());
         }
         protected override void Dispose(bool disposing)
         {

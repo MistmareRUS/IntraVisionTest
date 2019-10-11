@@ -1,0 +1,46 @@
+﻿@using IntraVisionTest.Models
+@model List<IntraVisionTest.Models.Coin>
+
+
+<form action="/Admin/SaveCoins" data-ajax="true" method="post" data-ajax-update="#coinsDiv" data-ajax-complete="" data-ajax-failure="alert(error); location.href = '/Admin/Index?SecretKey=magickey'">
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th style="padding-left:5px; padding-right:5px">Активно</th>
+            <th style="text-align:center">Количество</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Coin item in Model)
+        {
+
+            <tr>
+                @Html.Hidden("[" + (item.Id - 1) + "].Id", item.Id)
+                <td style="padding-top:5px">
+                    @if (item.ImageData != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.ImageData)" class="AdminCoin" />
+                    }
+                    else
+                    {
+                        <p>нет изображения</p>
+                    }
+                </td>
+
+                <td style="text-align:center">
+                    <input id="ch+@item.Id" name="[@(item.Id - 1)].Able" type="checkbox" checked="@item.Able" value="@item.Able.ToString()"  onchange="changeFlag('ch+@item.Id')"  style="width:20px; height:20px;margin-left:5px;margin-right:5px; " />
+                </td>
+
+                <td >
+                    <input type="number" name="[@(item.Id - 1)].Count" value="@item.Count" required pattern="\d+" min="0" />
+                </td>    
+                
+            </tr>
+        }        
+    </tbody>
+</table>
+    <br />
+    <input type="submit" value="Сохранить настройки монет"/>
+</form>
